@@ -9,16 +9,16 @@ defmodule Chirp.Timeline do
   alias Chirp.Timeline.Post
 
   @doc """
-  Returns the list of username.
+  Returns the list of posts.
 
   ## Examples
 
-      iex> list_username()
+      iex> list_posts()
       [%Post{}, ...]
 
   """
-  def list_username do
-    Repo.all(Post)
+  def list_posts do
+    Repo.all(from p in Post, order_by: [desc: p.id])
   end
 
   @doc """
@@ -53,6 +53,7 @@ defmodule Chirp.Timeline do
     %Post{}
     |> Post.changeset(attrs)
     |> Repo.insert()
+    |> broadcast(:post_created)
   end
 
   @doc """
@@ -71,6 +72,8 @@ defmodule Chirp.Timeline do
     post
     |> Post.changeset(attrs)
     |> Repo.update()
+    |> broadcast(:post_updated)
+
   end
 
   @doc """
@@ -101,4 +104,17 @@ defmodule Chirp.Timeline do
   def change_post(%Post{} = post, attrs \\ %{}) do
     Post.changeset(post, attrs)
   end
+
+  defp broadcast({:error, _reason} = error, _event), do: error
+
+  defp broadcast({:ok, post}, event) do
+      Phoenix.PubSub.broadcast(Chirp.PubSub, "posts", {event, post})
+      {:ok, post}
+  end
+
+  def subscribe do
+    Phoenix.PubSub.subscribe(Chirp.PubSub, "posts")
+  end
+
 end
+

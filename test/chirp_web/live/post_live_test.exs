@@ -5,9 +5,9 @@ defmodule ChirpWeb.PostLiveTest do
 
   alias Chirp.Timeline
 
-  @create_attrs %{body: "some body", likes_count: 42, reposts_count: 42}
-  @update_attrs %{body: "some updated body", likes_count: 43, reposts_count: 43}
-  @invalid_attrs %{body: nil, likes_count: nil, reposts_count: nil}
+  @create_attrs %{body: "some body", likes_count: 42, reposts_count: 42, username: "some username"}
+  @update_attrs %{body: "some updated body", likes_count: 43, reposts_count: 43, username: "some updated username"}
+  @invalid_attrs %{body: nil, likes_count: nil, reposts_count: nil, username: nil}
 
   defp fixture(:post) do
     {:ok, post} = Timeline.create_post(@create_attrs)
@@ -22,10 +22,10 @@ defmodule ChirpWeb.PostLiveTest do
   describe "Index" do
     setup [:create_post]
 
-    test "lists all username", %{conn: conn, post: post} do
+    test "lists all posts", %{conn: conn, post: post} do
       {:ok, _index_live, html} = live(conn, Routes.post_index_path(conn, :index))
 
-      assert html =~ "Listing Username"
+      assert html =~ "Listing Posts"
       assert html =~ post.body
     end
 
