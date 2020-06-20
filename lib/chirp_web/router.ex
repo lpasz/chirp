@@ -18,6 +18,13 @@ defmodule ChirpWeb.Router do
     pipe_through :browser
 
     live "/", PageLive, :index
+
+    live "/username", PostLive.Index, :index
+    live "/username/new", PostLive.Index, :new
+    live "/username/:id/edit", PostLive.Index, :edit
+
+    live "/username/:id", PostLive.Show, :show
+    live "/username/:id/show/edit", PostLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.
